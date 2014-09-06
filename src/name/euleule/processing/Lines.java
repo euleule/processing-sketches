@@ -2,22 +2,30 @@ package name.euleule.processing;
 
 import processing.core.PApplet;
 
+/**
+ * Create a picture of lines drawn between points on the adjacent sides of a rectangle.
+ * <p/>
+ * Controls:
+ * mouse    adjust number of points on the axis
+ * s        save the current image as jpg
+ * r        change line color
+ */
 public class Lines extends CustomPApplet {
 
-    int pointsX = 1;
-    int pointsY = 1;
+    int pointsX = 2;
+    int pointsY = 2;
 
     public void setup() {
         size(900, 900);
-        stroke(getLineColor());
+        stroke(getRandomGrey());
         strokeWeight(2);
     }
 
     public void draw() {
         background(255);
 
-        pointsX = max(mouseX / 30, 1);
-        pointsY = max(mouseY / 30, 1);
+        pointsX = max(mouseX / 30, 2);
+        pointsY = max(mouseY / 30, 2);
 
         if (max(pointsX, pointsY) > 7) {
             strokeWeight(1);
@@ -25,25 +33,32 @@ public class Lines extends CustomPApplet {
             strokeWeight(2);
         }
 
-        for (int i = 0; i < pointsX + 1; i++) {
-            float srcX = (height - 2 * border) / pointsX * i;
+        for (int i = 0; i < pointsX; i++) {
+            float src = getPointX(i);
 
-            for (int j = 0; j < pointsX + 1; j++) {
-                float destX = (height - 2 * border) / pointsX * j;
-                line(srcX + border, 0 + border, destX + border, width - border);
+            for (int j = 0; j < pointsX; j++) {
+                float dest = getPointX(j);
+                line(src + border, 0 + border, dest + border, width - border);
             }
         }
 
-        for (int i = 0; i < pointsY + 1; i++) {
-            float srcY = (width - 2 * border) / pointsY * i;
+        for (int i = 0; i < pointsY; i++) {
+            float src = getPointY(i);
 
-            for (int j = 0; j < pointsY + 1; j++) {
-
-                float destY = (width - 2 * border) / pointsY * j;
-                line(0 + border, srcY + border, height - border, destY + border);
+            for (int j = 0; j < pointsY; j++) {
+                float dest = getPointY(j);
+                line(0 + border, src + border, height - border, dest + border);
             }
 
         }
+    }
+
+    private float getPointX(int n) {
+        return (height - 2 * border) / (pointsX - 1) * n;
+    }
+
+    private float getPointY(int n) {
+        return (width - 2 * border) / (pointsY - 1) * n;
     }
 
     public static void main(String args[]) {

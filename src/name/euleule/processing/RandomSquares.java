@@ -2,6 +2,14 @@ package name.euleule.processing;
 
 import processing.core.PApplet;
 
+/**
+ * Create a picture out of randomizes lines and rectangles. Each click adds a new layer to the piece, while the older
+ * ones slowly fade out.
+ * <p/>
+ * Controls:
+ *  click    add a new layer
+ *  s        save the current image as jpg
+ */
 public class RandomSquares extends CustomPApplet {
 
     public void setup() {
@@ -11,41 +19,42 @@ public class RandomSquares extends CustomPApplet {
     }
 
     public void draw() {
+        // fade out previous layers
         noStroke();
-        fill(255, 128);
-        rect(0,0,900,900);
+        fill(255, 64);
+        rect(0, 0, 900, 900);
 
-        for (int i = 0; i < 5; i++) {
-            if (random(0, 1) > 0.4) {
-                line();
+        // add randomized elements
+        for (int i = 0; i < 10; i++) {
+            if (random(0, 1) > 0.5) {
+                randomLine();
             } else {
-                rect();
+                randomRect();
             }
         }
     }
 
-    private void line() {
+    private void randomLine() {
         strokeWeight(3);
-        for (int i = 0; i < 10; i++) {
-            stroke(getLineColor());
-            line(rndX(), rndY(), rndX(), rndY());
-        }
+        stroke(getRandomGrey());
+        line(rndX(), rndY(), rndX(), rndY());
     }
 
-    private void rect() {
+    private void randomRect() {
         noStroke();
-        for (int i = 0; i < 10; i++) {
-            fill(getLineColor());
-            float x = rndX();
-            float y = rndY();
-            rect(x, y, rndX() - x, rndY() - y);
-        }
+        fill(getRandomGrey());
+        float x = rndX();
+        float y = rndY();
+        rect(x, y, rndX() - x, rndY() - y);
     }
 
     private float rndX() {
         return random(border, width - border);
     }
 
+    /**
+     * Get a random point on the y axis, adjusted to image proportion.
+     */
     private float rndY() {
         return random(border + 150, height - border - 150);
     }
