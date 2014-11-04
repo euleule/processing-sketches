@@ -10,7 +10,7 @@ import processing.core.PApplet;
  * s        save the current image as jpg
  * r        change line color
  */
-public class Lines extends CustomPApplet {
+public class LinesOne extends CustomPApplet {
 
     int pointsX = 2;
     int pointsY = 2;
@@ -62,7 +62,7 @@ public class Lines extends CustomPApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[]{"--present", "name.euleule.processing.Lines"});
+        PApplet.main(new String[]{"--present", "name.euleule.processing.LinesOne"});
     }
 }
 

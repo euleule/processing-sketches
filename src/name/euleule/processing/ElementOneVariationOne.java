@@ -1,6 +1,6 @@
 package name.euleule.processing;
 
-import name.euleule.processing.name.euleule.processing.elements.One;
+import name.euleule.processing.elements.One;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -23,7 +23,7 @@ import java.util.List;
  * <p/>
  * - Repeat until desired number of iterations is reached.
  */
-public class RenderingOneVariationOne extends PApplet {
+public class ElementOneVariationOne extends PApplet {
 
     // Number of elements used for rendering
     final int NUM_OBJECTS = 70;
@@ -212,6 +212,6 @@ public class RenderingOneVariationOne extends PApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[]{"--present", "name.euleule.processing.RenderingOneVariationOne"});
+        PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationOne"});
     }
 }

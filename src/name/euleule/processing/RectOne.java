@@ -10,7 +10,7 @@ import processing.core.PApplet;
  *  click    add a new layer
  *  s        save the current image as jpg
  */
-public class RandomSquares extends CustomPApplet {
+public class RectOne extends CustomPApplet {
 
     public void setup() {
         size(900, 900);
@@ -60,6 +60,6 @@ public class RandomSquares extends CustomPApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[]{"--present", "name.euleule.processing.RandomSquares"});
+        PApplet.main(new String[]{"--present", "name.euleule.processing.RectOne"});
     }
 }

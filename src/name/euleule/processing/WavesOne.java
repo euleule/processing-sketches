@@ -11,7 +11,7 @@ import processing.core.PApplet;
  * s        save the current image as jpg
  * r        change line color
  */
-public class Waves extends CustomPApplet {
+public class WavesOne extends CustomPApplet {
 
     int cycles = 1;
     int waves = 1;
@@ -88,6 +88,6 @@ public class Waves extends CustomPApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[]{"--present", "name.euleule.processing.Waves"});
+        PApplet.main(new String[]{"--present", "name.euleule.processing.WavesOne"});
     }
 }
