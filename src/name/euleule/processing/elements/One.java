@@ -73,6 +73,22 @@ public class One {
         return color;
     }
 
+    /**
+     * Get Direction
+     * @return PVector
+     */
+    public PVector getDirection(){
+        return direction;
+    }
+
+    /**
+     * Set the direction;
+     * @param direction PVector
+     */
+    public void setDirection(PVector direction){
+        this.direction = direction;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
