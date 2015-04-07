@@ -23,10 +23,10 @@ import java.util.List;
  * <p/>
  * - Repeat until desired number of iterations is reached.
  */
-public class ElementOneVariationFive extends PApplet {
+public class ElementOneVariationSix extends PApplet {
 
     // Number of elements used for rendering
-    final int NUM_OBJECTS = 450;
+    final int NUM_OBJECTS = 700;
     // Minimum size of elements
     final int D_MIN = 150;
     // Maximum size of elements
@@ -75,8 +75,8 @@ public class ElementOneVariationFive extends PApplet {
         groups = new ArrayList<List<One>>();
         color = PVector.random3D();
         PVector direction = PVector.random2D();
-
         float c = random(0,359);
+
         for (int i = 0; i < NUM_OBJECTS; i++) {
             float d = random(D_MIN, D_MAX);
             float x = random(-width / 2 + BORDER + d / 2, width / 2 - BORDER - d / 2);
@@ -90,7 +90,7 @@ public class ElementOneVariationFive extends PApplet {
                 m=(c-30)%360;
             One one = new One(x, y, d, new PVector(m, 255, 128));
 
-            one.setDirection(direction);
+//            one.setDirection(direction);
             objects.add(one);
         }
         iterations++;
@@ -113,6 +113,7 @@ public class ElementOneVariationFive extends PApplet {
             PVector color = o1.getColor().get();
 
             stroke(color.x, a.dist(b), color.z, alpha);
+            stroke(color.x, color.y, color.z, alpha);
             line(a.x, a.y, b.x, b.y);
         }
     }
@@ -134,14 +135,19 @@ public class ElementOneVariationFive extends PApplet {
             reset();
         }
 
-        // save each frame
-//        if(folder != null) {
-//            saveFrame(folder + "/frames/frame-######.png");
-//        }
-
         for (One o : objects) {
             o.update();
         }
+
+        for(List<One> group: groups){
+            PVector bari = group.get(0).getPos().copy();
+            bari.add(group.get(1).getPos());
+bari.div(2);
+            bari.normalize();
+
+            group.get(0).getPos().add(bari);
+        }
+
         checkIntersections();
     }
 
@@ -224,6 +230,6 @@ public class ElementOneVariationFive extends PApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationFive"});
+        PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationSix"});
     }
 }
