@@ -7,9 +7,11 @@ import processing.core.PVector;
  */
 public class One {
     private PVector pos;
+    private PVector start;
     private PVector direction;
     private float diameter;
     private PVector color;
+    private float size;
 
     /**
      * @param x        x position of the element
@@ -19,6 +21,7 @@ public class One {
      */
     public One(float x, float y, float diameter, PVector color) {
         this.pos = new PVector(x, y);
+        this.start = pos.copy();
         this.diameter = diameter;
         this.color = color;
         direction = PVector.random2D();
@@ -75,17 +78,19 @@ public class One {
 
     /**
      * Get Direction
+     *
      * @return PVector
      */
-    public PVector getDirection(){
+    public PVector getDirection() {
         return direction;
     }
 
     /**
      * Set the direction;
+     *
      * @param direction PVector
      */
-    public void setDirection(PVector direction){
+    public void setDirection(PVector direction) {
         this.direction = direction;
     }
 
@@ -111,5 +116,21 @@ public class One {
         result = 31 * result + (diameter != +0.0f ? Float.floatToIntBits(diameter) : 0);
         result = 31 * result + (color != null ? color.hashCode() : 0);
         return result;
+    }
+
+    public void setSize(float size) {
+        this.size = size;
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public PVector getStart() {
+        return start;
+    }
+
+    public void setStart(PVector start) {
+        this.start = start;
     }
 }
