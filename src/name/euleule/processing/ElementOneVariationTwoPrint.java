@@ -23,55 +23,48 @@ import java.util.List;
  * <p/>
  * - Repeat until desired number of iterations is reached.
  */
-public class ElementOneVariationThreePrint extends PApplet {
-
-    // Set the path to the directory the images should be rendered to
-    final String PATH = "/Users/robert/Desktop/Print/";
-    // Set the targeted resolution of the high res image. Should be > 12k
-    final int TARGET_RESOLUTION = 1600;
+public class ElementOneVariationTwoPrint extends PApplet {
 
     // Number of elements used for rendering
-    final int NUM_OBJECTS = 80;
+    final int NUM_OBJECTS = 30;
     // Minimum size of elements
-    final int D_MIN = 50;
+    final int D_MIN = 100;
     // Maximum size of elements
-    final int D_MAX = 150;
+    final int D_MAX = 200;
     // Border width in px
-    final int BORDER = 200;
-
+    final int BORDER = 100;
     // Number of iterations
-    final int MAX_ITERATIONS = 2;
+    final int MAX_ITERATIONS = 6;
 
+    final int screenResolution = 900;
+    final int printResolution = 12000;
+    float scale = (float) printResolution / screenResolution;
     List<One> objects;
     List<List<One>> groups;
     PVector color;
     int iterations = 0;
-    private String fileName;
-    private PGraphics pgPrint;
+    String fileName = "";
 
-    final int screenResolution = 1600;
-    final int printResolution = TARGET_RESOLUTION;
-    float scale = (float) printResolution / screenResolution;
+    PGraphics pgPrint = null;
 
     /**
      * Set up scene.
      */
     public void setup() {
         size(screenResolution, screenResolution, P2D);
+        fileName = "/Users/robert/Desktop/Print/1_2_" + System.currentTimeMillis();
 
         background(255);
-        pgPrint = createGraphics(printResolution, printResolution, P2D);
+
+        pgPrint = createGraphics(printResolution, printResolution);
         pgPrint.beginDraw();
         pgPrint.background(255);
-        pgPrint.strokeWeight(scale);
-        pgPrint.translate(printResolution / 2, printResolution / 2);
-
-        fileName = PATH + "1_3_" + System.currentTimeMillis();
 
         color = PVector.random3D();
-        color.mult(2);
 
         strokeWeight(1);
+        pgPrint.strokeWeight(scale);
+        pgPrint.translate(printResolution / 2, printResolution / 2);
         reset();
     }
 
@@ -84,15 +77,9 @@ public class ElementOneVariationThreePrint extends PApplet {
 
         for (int i = 0; i < NUM_OBJECTS; i++) {
             float d = random(D_MIN, D_MAX);
-            PVector dir = new PVector(0, random(-1, 1));
-            dir.normalize();
             float x = random(-width / 2 + BORDER, width / 2 - BORDER);
-            float y = -1;
-            if (dir.y < 0) {
-                y = 1;
-            }
+            float y = random(-height / 2 + BORDER, height / 2 - BORDER);
             One one = new One(x, y, d, color);
-            one.setDirection(dir);
             objects.add(one);
         }
 
@@ -105,20 +92,22 @@ public class ElementOneVariationThreePrint extends PApplet {
     public void draw() {
         update();
         translate(width / 2, height / 2);
+
         for (List<One> group : groups) {
             One o1 = group.get(0);
             One o2 = group.get(1);
             PVector a = o1.getPos();
             PVector b = o2.getPos();
 
-            float alpha = min((D_MIN + D_MAX) * 2 / a.dist(b), 9);
+            float alpha = min((float) ((D_MIN + D_MAX) * 2) / a.dist(b), 9);
 
             PVector color = o1.getColor().get();
-            color.mult(a.dist(b) * (iterations - 1) / MAX_ITERATIONS);
+            color.mult(a.dist(b) * iterations / MAX_ITERATIONS);
 
             stroke(color.x, color.y, color.z, alpha);
             line(a.x, a.y, b.x, b.y);
 
+//            color.mult(1.2f);
             pgPrint.stroke(color.x, color.y, color.z, alpha);
             pgPrint.line(a.x * scale, a.y * scale, b.x * scale, b.y * scale);
         }
@@ -137,13 +126,13 @@ public class ElementOneVariationThreePrint extends PApplet {
 
         if (iterations > MAX_ITERATIONS) {
             save(fileName + ".jpg");
+
             pgPrint.endDraw();
-            pgPrint.save(fileName + "_highres.jpg");
+            pgPrint.save(fileName + "_highes.jpg");
             exit();
         }
 
-        if (groups.size() == 0) {
-            objects.clear();
+        if (objects.size() == 0) {
             reset();
         }
 
@@ -157,13 +146,24 @@ public class ElementOneVariationThreePrint extends PApplet {
      * Check if any elements are out of screen. If they are, remove them from the scene.
      */
     private void checkOutOfScreen() {
+        // check for items out of screen
+        List<One> remove = new ArrayList<One>();
+        for (One o : objects) {
+            if (isOutOfScreen(o)) {
+                remove.add(o);
+            }
+        }
 
         // get groups for elements out of screen
         List<List<One>> removeGroup = new ArrayList<List<One>>();
-        for (List<One> group : groups) {
-            if (isOutOfScreen(group)) {
-                removeGroup.add(group);
+        for (One o : remove) {
+            for (List<One> group : groups) {
+                if (group.get(0).equals(o) || group.get(1).equals(o)) {
+                    removeGroup.add(group);
+                }
             }
+            objects.remove(o);
+
         }
 
         groups.removeAll(removeGroup);
@@ -172,17 +172,11 @@ public class ElementOneVariationThreePrint extends PApplet {
     /**
      * Check if the element is out of screen.
      *
-     * @param list Elements that needs to be checked.
+     * @param one Element that needs to be checked.
      * @return boolean
      */
-    private boolean isOutOfScreen(List<One> list) {
-        int maxDistance = 0;
-        float pos = 0;
-        for (One one : list) {
-            maxDistance += one.getDiameter();
-            pos = Math.max(pos, Math.abs(one.getPos().y));
-        }
-        return maxDistance < pos;
+    private boolean isOutOfScreen(One one) {
+        return (one.getPos().dist(new PVector(0, 0)) + BORDER > width / 2);
     }
 
     /**
@@ -228,6 +222,6 @@ public class ElementOneVariationThreePrint extends PApplet {
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationThreePrint"});
+        PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationTwoPrint"});
     }
 }
