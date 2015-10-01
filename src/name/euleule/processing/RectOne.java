@@ -12,12 +12,19 @@ import processing.core.PApplet;
  */
 public class RectOne extends CustomPApplet {
 
-    public void setup() {
+
+    @Override
+    public void settings(){
         size(900, 900);
+    }
+
+    @Override
+    public void setup() {
         background(255);
         noLoop();
     }
 
+    @Override
     public void draw() {
         // fade out previous layers
         noStroke();

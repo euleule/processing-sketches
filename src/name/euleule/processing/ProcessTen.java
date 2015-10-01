@@ -2,133 +2,105 @@ package name.euleule.processing;
 
 import name.euleule.processing.elements.One;
 import processing.core.PApplet;
-import processing.core.PGraphics;
 import processing.core.PVector;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * - Create a number of One, random in size, limited to the parameters for their maximum and minimum diameter.
- * <p/>
- * - Distribute the elements evenly on the canvas.
- * <p/>
- * - Set a random color.
- * <p/>
- * - If two elements intersect each other, start drawing a line.
- * <p/>
- * - Increase lightness if the elements distance grows. Decrease lightness if the elements distance decreases.
- * <p/>
- * - When an element reaches the border of the canvas, remove the element.
- * <p/>
- * - Repeat until desired number of iterations is reached.
- */
-public class ElementOneVariationTwoPrint extends PApplet {
+public class ProcessTen extends PApplet{
 
     // Number of elements used for rendering
-    final int NUM_OBJECTS = 30;
+    final int NUM_OBJECTS = 100;
     // Minimum size of elements
-    final int D_MIN = 100;
+    final int D_MIN = 30;
     // Maximum size of elements
-    final int D_MAX = 200;
+    final int D_MAX = 60;
     // Border width in px
-    final int BORDER = 100;
+    final int BORDER = 30;
     // Number of iterations
-    final int MAX_ITERATIONS = 6;
+    final int MAX_ITERATIONS = 1;
 
-    final int screenResolution = 900;
-    final int printResolution = 12000;
-    float scale = (float) printResolution / screenResolution;
+    final int SIZE=600;
+
     List<One> objects;
     List<List<One>> groups;
     PVector color;
-    int iterations = 0;
-    String fileName = "";
+    int iterations;
 
-    PGraphics pgPrint = null;
-
+    @Override
+    public void settings(){
+        size(SIZE, SIZE);
+    }
     /**
      * Set up scene.
      */
+    @Override
     public void setup() {
-        size(screenResolution, screenResolution, P2D);
-        fileName = "/Users/robert/Desktop/Print/1_2_" + System.currentTimeMillis();
-
         background(255);
-
-        pgPrint = createGraphics(printResolution, printResolution);
-        pgPrint.beginDraw();
-        pgPrint.background(255);
-
-        color = PVector.random3D();
-
+        colorMode(HSB);
         strokeWeight(1);
-        pgPrint.strokeWeight(scale);
-        pgPrint.translate(printResolution / 2, printResolution / 2);
+        iterations = 0;
         reset();
     }
+
 
     /**
      * Re-initialize the elements.
      */
-    private void reset() {
-        objects = new ArrayList<One>();
-        groups = new ArrayList<List<One>>();
+    protected void reset() {
+        objects = new ArrayList<>();
+        groups = new ArrayList<>();
+        PVector direction = new PVector(0, 1);
+        float c = random(0, 359);
 
         for (int i = 0; i < NUM_OBJECTS; i++) {
             float d = random(D_MIN, D_MAX);
-            float x = random(-width / 2 + BORDER, width / 2 - BORDER);
-            float y = random(-height / 2 + BORDER, height / 2 - BORDER);
-            One one = new One(x, y, d, color);
+            float x = random(-width / 2 + BORDER + d / 2, width / 2 - BORDER - d / 2);
+            float y = random(-height / 2 + BORDER + d / 2, height / 2 - BORDER - d / 2);
+
+            float m = c;
+            float k = random(0, 3);
+            if (k > 2)
+                m = (c + 30) % 360;
+            if (k > 1)
+                m = (c - 30) % 360;
+            One one = new One(x, y, d, new PVector(m, 255, 128));
+
+            one.setDirection(direction);
             objects.add(one);
         }
-
         iterations++;
     }
 
     /**
      * Draw scene.
      */
+    @Override
     public void draw() {
         update();
         translate(width / 2, height / 2);
-
         for (List<One> group : groups) {
             One o1 = group.get(0);
             One o2 = group.get(1);
             PVector a = o1.getPos();
             PVector b = o2.getPos();
 
-            float alpha = min((float) ((D_MIN + D_MAX) * 2) / a.dist(b), 9);
+            float alpha = min((D_MIN + D_MAX) * 2 / a.dist(b), 9);
 
-            PVector color = o1.getColor().get();
-            color.mult(a.dist(b) * iterations / MAX_ITERATIONS);
+            PVector color = o1.getColor().copy();
 
-            stroke(color.x, color.y, color.z, alpha);
+            stroke(color.x, a.dist(b), color.z, alpha);
             line(a.x, a.y, b.x, b.y);
-
-//            color.mult(1.2f);
-            pgPrint.stroke(color.x, color.y, color.z, alpha);
-            pgPrint.line(a.x * scale, a.y * scale, b.x * scale, b.y * scale);
         }
     }
 
     /**
      * Update the element in the scene.
      */
-    private void update() {
-        for (One o : objects) {
-            o.update();
-        }
-        checkIntersections();
-
+    protected void update() {
         checkOutOfScreen();
 
         if (iterations > MAX_ITERATIONS) {
-            save(fileName + ".jpg");
-
-            pgPrint.endDraw();
-            pgPrint.save(fileName + "_highes.jpg");
             exit();
         }
 
@@ -136,18 +108,27 @@ public class ElementOneVariationTwoPrint extends PApplet {
             reset();
         }
 
-        // save each frame
-//        if(folder != null) {
-//            saveFrame(folder + "/frames/frame-######.png");
-//        }
+        for (One o : objects) {
+            o.update();
+        }
+
+        for (List<One> group : groups) {
+            PVector bari = group.get(0).getPos().copy();
+            bari.sub(group.get(1).getPos());
+            bari.normalize();
+            bari.div(10);
+            group.get(0).getPos().sub(bari);
+        }
+
+        checkIntersections();
     }
 
     /**
      * Check if any elements are out of screen. If they are, remove them from the scene.
      */
-    private void checkOutOfScreen() {
+    protected void checkOutOfScreen() {
         // check for items out of screen
-        List<One> remove = new ArrayList<One>();
+        List<One> remove = new ArrayList<>();
         for (One o : objects) {
             if (isOutOfScreen(o)) {
                 remove.add(o);
@@ -155,7 +136,7 @@ public class ElementOneVariationTwoPrint extends PApplet {
         }
 
         // get groups for elements out of screen
-        List<List<One>> removeGroup = new ArrayList<List<One>>();
+        List<List<One>> removeGroup = new ArrayList<>();
         for (One o : remove) {
             for (List<One> group : groups) {
                 if (group.get(0).equals(o) || group.get(1).equals(o)) {
@@ -163,7 +144,6 @@ public class ElementOneVariationTwoPrint extends PApplet {
                 }
             }
             objects.remove(o);
-
         }
 
         groups.removeAll(removeGroup);
@@ -175,15 +155,15 @@ public class ElementOneVariationTwoPrint extends PApplet {
      * @param one Element that needs to be checked.
      * @return boolean
      */
-    private boolean isOutOfScreen(One one) {
-        return (one.getPos().dist(new PVector(0, 0)) + BORDER > width / 2);
+    protected boolean isOutOfScreen(One one) {
+        return Math.abs(one.getPos().x) + BORDER > width / 2 || Math.abs(one.getPos().y) + BORDER > height / 2;
     }
 
     /**
      * Check all elements for intersections.
      */
-    private void checkIntersections() {
-        List<One> list = new ArrayList<One>();
+    protected void checkIntersections() {
+        List<One> list = new ArrayList<>();
         list.addAll(objects);
 
         for (One o : objects) {
@@ -205,7 +185,7 @@ public class ElementOneVariationTwoPrint extends PApplet {
      * @param o1 One
      * @param o2 One
      */
-    private void addGroup(One o1, One o2) {
+    protected void addGroup(One o1, One o2) {
         // check if there a group for the elements exists
         for (List<One> group : groups) {
             if (group.get(0).equals(o1) && group.get(1).equals(o2) || group.get(0).equals(o2) && group.get(1).equals(o1)) {
@@ -215,13 +195,13 @@ public class ElementOneVariationTwoPrint extends PApplet {
         }
 
         // create new group
-        List<One> group = new ArrayList<One>();
+        List<One> group = new ArrayList<>();
         group.add(o1);
         group.add(o2);
         groups.add(group);
     }
 
     public static void main(String args[]) {
-        PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationTwoPrint"});
+        PApplet.main(new String[]{"--present", "name.euleule.processing.ProcessTen"});
     }
 }

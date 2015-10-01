@@ -18,8 +18,14 @@ public class WavesOne extends CustomPApplet {
 
     boolean base = false;
 
-    public void setup() {
+
+    @Override
+    public void settings(){
         size(900, 900);
+    }
+
+    @Override
+    public void setup() {
         background(220);
         smooth();
         stroke(getRandomGrey());
@@ -27,6 +33,7 @@ public class WavesOne extends CustomPApplet {
         noFill();
     }
 
+    @Override
     public void draw() {
         background(200);
         translate(80, 80);
@@ -80,6 +87,7 @@ public class WavesOne extends CustomPApplet {
         bezier(width / 2, height / 2, width * 4 / 6, height / 2 + ((height / 2) * amp), width * 5 / 6, height / 2 + ((height / 2) * amp), width, height / 2);
     }
 
+    @Override
     public void keyPressed() {
         super.keyPressed();
         if (key == 'b') {

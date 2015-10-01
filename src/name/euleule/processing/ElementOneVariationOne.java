@@ -3,6 +3,7 @@ package name.euleule.processing;
 import name.euleule.processing.elements.One;
 import processing.core.PApplet;
 import processing.core.PVector;
+import processing.data.XML;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,37 +41,29 @@ public class ElementOneVariationOne extends PApplet {
     List<List<One>> groups;
     PVector color;
     int iterations;
-    String folder = null;
+
+    @Override
+    public void settings(){
+        size(1200, 900);
+    }
 
     /**
      * Set up scene.
      */
+    @Override
     public void setup() {
-        size(1200, 900);
         background(240);
         strokeWeight(2);
-        selectFolder("Select an output folder!", "folderSelected");
         iterations = 0;
         reset();
-    }
-
-    /**
-     * Callback function for folder selection dialogue.
-     *
-     * @param selection Folder selected.
-     */
-    public void folderSelected(File selection) {
-        if (selection != null) {
-            folder = selection.getAbsolutePath() + File.separator;
-        }
     }
 
     /**
      * Re-initialize the elements.
      */
     private void reset() {
-        objects = new ArrayList<One>();
-        groups = new ArrayList<List<One>>();
+        objects = new ArrayList<>();
+        groups = new ArrayList<>();
         color = PVector.random3D();
         for (int i = 0; i < NUM_OBJECTS; i++) {
             float d = random(D_MIN, D_MAX);
@@ -86,6 +79,7 @@ public class ElementOneVariationOne extends PApplet {
     /**
      * Draw scene.
      */
+    @Override
     public void draw() {
         update();
         translate(width / 2, height / 2);
@@ -97,7 +91,7 @@ public class ElementOneVariationOne extends PApplet {
 
             float alpha = min((D_MIN + D_MAX) * 2 / a.dist(b), 9);
 
-            PVector color = o1.getColor().get();
+            PVector color = o1.getColor().copy();
             color.mult(a.dist(b));
 
             stroke(color.x, color.y, color.z, alpha);
@@ -116,16 +110,8 @@ public class ElementOneVariationOne extends PApplet {
         }
 
         if (objects.size() == 0) {
-            if (folder != null) {
-                save(folder + System.currentTimeMillis() + ".png");
-            }
             reset();
         }
-
-        // save each frame
-//        if(folder != null) {
-//            saveFrame(folder + "/frames/frame-######.png");
-//        }
 
         for (One o : objects) {
             o.update();
@@ -138,7 +124,7 @@ public class ElementOneVariationOne extends PApplet {
      */
     private void checkOutOfScreen() {
         // check for items out of screen
-        List<One> remove = new ArrayList<One>();
+        List<One> remove = new ArrayList<>();
         for (One o : objects) {
             if (isOutOfScreen(o)) {
                 remove.add(o);
@@ -146,7 +132,7 @@ public class ElementOneVariationOne extends PApplet {
         }
 
         // get groups for elements out of screen
-        List<List<One>> removeGroup = new ArrayList<List<One>>();
+        List<List<One>> removeGroup = new ArrayList<>();
         for (One o : remove) {
             for (List<One> group : groups) {
                 if (group.get(0).equals(o) || group.get(1).equals(o)) {
@@ -173,7 +159,7 @@ public class ElementOneVariationOne extends PApplet {
      * Check all elements for intersections.
      */
     private void checkIntersections() {
-        List<One> list = new ArrayList<One>();
+        List<One> list = new ArrayList<>();
         list.addAll(objects);
 
         for (One o : objects) {
@@ -205,7 +191,7 @@ public class ElementOneVariationOne extends PApplet {
         }
 
         // create new group
-        List<One> group = new ArrayList<One>();
+        List<One> group = new ArrayList<>();
         group.add(o1);
         group.add(o2);
         groups.add(group);

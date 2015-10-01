@@ -4,23 +4,22 @@ import name.euleule.processing.elements.One;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * - Create a number of One, random in size, limited to the parameters for their maximum and minimum diameter.
- * <p/>
+ * <p>
  * - Distribute the elements evenly on the canvas.
- * <p/>
+ * <p>
  * - Set a random color.
- * <p/>
+ * <p>
  * - If two elements intersect each other, start drawing a line.
- * <p/>
+ * <p>
  * - Increase lightness if the elements distance grows. Decrease lightness if the elements distance decreases.
- * <p/>
+ * <p>
  * - When an element reaches the border of the canvas, remove the element.
- * <p/>
+ * <p>
  * - Repeat until desired number of iterations is reached.
  */
 public class ElementOneVariationSix extends PApplet {
@@ -28,54 +27,46 @@ public class ElementOneVariationSix extends PApplet {
     // Number of elements used for rendering
     final int NUM_OBJECTS = 700;
     // Minimum size of elements
-    final int D_MIN = 150;
+    final int D_MIN = 15;
     // Maximum size of elements
-    final int D_MAX = 300;
+    final int D_MAX = 30;
     // Border width in px
-    final int BORDER = 300;
+    final int BORDER = 30;
     // Number of iterations
     final int MAX_ITERATIONS = 1;
+    final int SIZE = 600;
 
     List<One> objects;
     List<List<One>> groups;
     PVector color;
     int iterations;
-    String folder = null;
+
+    @Override
+    public void settings() {
+        size(SIZE, SIZE);
+    }
 
     /**
      * Set up scene.
      */
+    @Override
     public void setup() {
-        size(6000, 6000, P2D);
-        frameRate(600);
         background(255);
         colorMode(HSB);
         strokeWeight(1);
-        selectFolder("Select an output folder!", "folderSelected");
         iterations = 0;
         reset();
-    }
-
-    /**
-     * Callback function for folder selection dialogue.
-     *
-     * @param selection Folder selected.
-     */
-    public void folderSelected(File selection) {
-        if (selection != null) {
-            folder = selection.getAbsolutePath() + File.separator;
-        }
     }
 
     /**
      * Re-initialize the elements.
      */
     private void reset() {
-        objects = new ArrayList<One>();
-        groups = new ArrayList<List<One>>();
+        objects = new ArrayList<>();
+        groups = new ArrayList<>();
         color = PVector.random3D();
         PVector direction = PVector.random2D();
-        float c = random(0,359);
+        float c = random(0, 359);
 
         for (int i = 0; i < NUM_OBJECTS; i++) {
             float d = random(D_MIN, D_MAX);
@@ -83,11 +74,11 @@ public class ElementOneVariationSix extends PApplet {
             float y = random(-height / 2 + BORDER + d / 2, height / 2 - BORDER - d / 2);
 
             float m = c;
-            float k = random(0,3);
-            if(k>2)
-                m= (c+30)%360;
-            if(k>1)
-                m=(c-30)%360;
+            float k = random(0, 3);
+            if (k > 2)
+                m = (c + 30) % 360;
+            if (k > 1)
+                m = (c - 30) % 360;
             One one = new One(x, y, d, new PVector(m, 255, 128));
 
 //            one.setDirection(direction);
@@ -99,6 +90,7 @@ public class ElementOneVariationSix extends PApplet {
     /**
      * Draw scene.
      */
+    @Override
     public void draw() {
         update();
         translate(width / 2, height / 2);
@@ -110,7 +102,7 @@ public class ElementOneVariationSix extends PApplet {
 
             float alpha = min((D_MIN + D_MAX) * 2 / a.dist(b), 9);
 
-            PVector color = o1.getColor().get();
+            PVector color = o1.getColor().copy();
 
             stroke(color.x, a.dist(b), color.z, alpha);
             stroke(color.x, color.y, color.z, alpha);
@@ -129,9 +121,6 @@ public class ElementOneVariationSix extends PApplet {
         }
 
         if (objects.size() == 0) {
-            if (folder != null) {
-                save(folder + System.currentTimeMillis() + ".png");
-            }
             reset();
         }
 
@@ -139,10 +128,10 @@ public class ElementOneVariationSix extends PApplet {
             o.update();
         }
 
-        for(List<One> group: groups){
-            PVector bari = group.get(0).getPos().get();
+        for (List<One> group : groups) {
+            PVector bari = group.get(0).getPos().copy();
             bari.add(group.get(1).getPos());
-bari.div(2);
+            bari.div(2);
             bari.normalize();
 
             group.get(0).getPos().add(bari);
@@ -156,7 +145,7 @@ bari.div(2);
      */
     private void checkOutOfScreen() {
         // check for items out of screen
-        List<One> remove = new ArrayList<One>();
+        List<One> remove = new ArrayList<>();
         for (One o : objects) {
             if (isOutOfScreen(o)) {
                 remove.add(o);
@@ -164,7 +153,7 @@ bari.div(2);
         }
 
         // get groups for elements out of screen
-        List<List<One>> removeGroup = new ArrayList<List<One>>();
+        List<List<One>> removeGroup = new ArrayList<>();
         for (One o : remove) {
             for (List<One> group : groups) {
                 if (group.get(0).equals(o) || group.get(1).equals(o)) {
@@ -191,7 +180,7 @@ bari.div(2);
      * Check all elements for intersections.
      */
     private void checkIntersections() {
-        List<One> list = new ArrayList<One>();
+        List<One> list = new ArrayList<>();
         list.addAll(objects);
 
         for (One o : objects) {
@@ -223,7 +212,7 @@ bari.div(2);
         }
 
         // create new group
-        List<One> group = new ArrayList<One>();
+        List<One> group = new ArrayList<>();
         group.add(o1);
         group.add(o2);
         groups.add(group);

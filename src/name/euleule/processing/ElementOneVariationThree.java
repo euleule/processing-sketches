@@ -33,71 +33,43 @@ public class ElementOneVariationThree extends PApplet {
     final int D_MAX = 150;
     // Border width in px
     final int BORDER = 200;
-    final int COLORED_BORDER_RATIO = 0;
     // Number of iterations
     final int MAX_ITERATIONS = 5;
+
+    final int SIZE = 1600;
 
     List<One> objects;
     List<List<One>> groups;
     PVector color;
     int iterations = 0;
-    String folder = null;
+
+    @Override
+    public void settings(){
+        size(SIZE, SIZE);
+    }
 
     /**
      * Set up scene.
      */
+    @Override
     public void setup() {
-        size(1600, 1600, P2D);
-        
+
         background(255, 250, 240);
-//        stroke(245);
-//        for (int i = 0; i < width; i++) {
-//            for (int j = 0; j < height; j++) {
-//                if (random(0, 3) > 2) {
-//                    point(i, j);
-//                }
-//            }
-//        }
 
         image(loadImage("/Users/robert/Desktop/back.png"), 0, 0);
 
-        selectFolder("Select an output folder!", "folderSelected");
         color = PVector.random3D();
-
-        if (COLORED_BORDER_RATIO > 0) {
-            float borderWidth = BORDER / COLORED_BORDER_RATIO;
-            noStroke();
-            PVector c = color.get();
-            c.normalize();
-            c.mult(96);
-            fill(c.x, c.y, c.z);
-            rect(0, 0, width, borderWidth);
-            rect(0, 0, borderWidth, height);
-            rect(0, height - borderWidth, width, borderWidth);
-            rect(width - borderWidth, 0, borderWidth, height);
-        }
 
         strokeWeight(1);
         reset();
     }
 
     /**
-     * Callback function for folder selection dialogue.
-     *
-     * @param selection Folder selected.
-     */
-    public void folderSelected(File selection) {
-        if (selection != null) {
-            folder = selection.getAbsolutePath() + File.separator;
-        }
-    }
-
-    /**
      * Re-initialize the elements.
      */
     private void reset() {
-        objects = new ArrayList<One>();
-        groups = new ArrayList<List<One>>();
+        objects = new ArrayList<>();
+        groups = new ArrayList<>();
 
         for (int i = 0; i < NUM_OBJECTS; i++) {
             float d = random(D_MIN, D_MAX);
@@ -119,6 +91,7 @@ public class ElementOneVariationThree extends PApplet {
     /**
      * Draw scene.
      */
+    @Override
     public void draw() {
         update();
         translate(width / 2, height / 2);
@@ -130,7 +103,7 @@ public class ElementOneVariationThree extends PApplet {
 
             float alpha = min((D_MIN + D_MAX) * 2 / a.dist(b), 9);
 
-            PVector color = o1.getColor().get();
+            PVector color = o1.getColor().copy();
             color.mult(a.dist(b) * (iterations - 1) / MAX_ITERATIONS);
 
             stroke(color.x, color.y, color.z, alpha);
@@ -150,9 +123,6 @@ public class ElementOneVariationThree extends PApplet {
         checkOutOfScreen();
 
         if (iterations > MAX_ITERATIONS) {
-            if (folder != null) {
-                save(folder + System.currentTimeMillis() + ".jpg");
-            }
             exit();
         }
 
@@ -161,10 +131,6 @@ public class ElementOneVariationThree extends PApplet {
             reset();
         }
 
-        // save each frame
-//        if(folder != null) {
-//            saveFrame(folder + "/frames/frame-######.png");
-//        }
     }
 
     /**
@@ -173,7 +139,7 @@ public class ElementOneVariationThree extends PApplet {
     private void checkOutOfScreen() {
 
         // get groups for elements out of screen
-        List<List<One>> removeGroup = new ArrayList<List<One>>();
+        List<List<One>> removeGroup = new ArrayList<>();
         for (List<One> group : groups) {
             if (isOutOfScreen(group)) {
                 removeGroup.add(group);
@@ -203,7 +169,7 @@ public class ElementOneVariationThree extends PApplet {
      * Check all elements for intersections.
      */
     private void checkIntersections() {
-        List<One> list = new ArrayList<One>();
+        List<One> list = new ArrayList<>();
         list.addAll(objects);
 
         for (One o : objects) {
@@ -235,7 +201,7 @@ public class ElementOneVariationThree extends PApplet {
         }
 
         // create new group
-        List<One> group = new ArrayList<One>();
+        List<One> group = new ArrayList<>();
 //        if (o1.getDirection().y > 0 && o2.getDirection().y > 0 || o1.getDirection().y < 0 && o2.getDirection().y < 0) {
         group.add(o1);
         group.add(o2);

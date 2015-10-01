@@ -20,155 +20,140 @@ import java.util.stream.Collectors;
  */
 public class ElementOneVariationSeven extends PApplet {
 
-	// Number of elements use for rendering
-	final int NUM_OBJECTS = 200;
-	// Minimum size of elements
-	final int D_MIN = 25;
-	// Maximum size of elements
-	final int D_MAX = 50;
-	final int BORDER = 50;
+    // Number of elements use for rendering
+    final int NUM_OBJECTS = 200;
+    // Minimum size of elements
+    final int D_MIN = 25;
+    // Maximum size of elements
+    final int D_MAX = 50;
+    final int BORDER = 50;
 
-	final int SIZE = 1000;
-	final int MAX_ITERATIONS = 2;
-	int nurbs = -1;
+    final int SIZE = 1000;
+    final int MAX_ITERATIONS = 2;
+    int direction = -1;
 
-	String savePath = "/Users/rkause/Desktop/Sketches/";
+    List<One> objects = new ArrayList<>();
+    PVector color;
+    int iterations;
 
-	public void keyPressed() {
-		if (key == 's') {
-			System.out.println("Saving ...");
-			save(savePath + System.currentTimeMillis() + ".jpg");
-		}
-	}
+    String savePath = "/Users/robert/Desktop/Sketches/";
 
-	/**
-	 * Re-initialize the elements.
-	 */
-	protected void reset() {
-		objects.clear();
-		nurbs *= -1;
-		PVector direction = new PVector(0, nurbs);
-		float c = random(0, 359);
-		System.out.println(c);
+    @Override
+    public void settings() {
+        size(SIZE, SIZE);
+    }
 
-		for (int i = 0; i < NUM_OBJECTS; i++) {
-			float d = random(D_MIN, D_MAX);
-			float x = random(-width / 2 + BORDER + d / 2, width / 2 - BORDER - d / 2);
-			float y = random(-height / 2 + BORDER + d / 2, height / 2 - BORDER - d / 2);
+    /**
+     * Set up scene.
+     */
+    @Override
+    public void setup() {
+        frameRate(120);
+        background(255);
+        colorMode(HSB);
+        strokeWeight(1);
+        iterations = 0;
+    }
 
-			float m = c;
-			float k = random(0, 3);
-			if (k > 2)
-				m = (c + 30) % 360;
-			if (k > 1)
-				m = (c - 30) % 360;
-			One one = new One(x, y, d, new PVector(m, 255, 128));
+    public void keyPressed() {
+        if (key == 's') {
+            System.out.println("Saving ...");
+            save(savePath + System.currentTimeMillis() + ".jpg");
+        }
+    }
 
-			one.setDirection(direction);
-			objects.add(one);
-		}
-		iterations++;
-	}
+    /**
+     * Re-initialize the elements.
+     */
+    void reset() {
+        objects.clear();
+        direction *= -1;
 
-	/**
-	 * Draw scene.
-	 */
-	public void draw() {
-		update();
-		translate(width / 2, height / 2);
-		for (One o1 : objects) {
-			for (One o2 : objects) {
-				if (o1.intersect(o2)) {
-					PVector a = o1.getPos();
-					PVector b = o2.getPos();
+        PVector direction = new PVector(0, this.direction);
+        float c = random(0, 359);
 
-					float alpha = min((D_MIN + D_MAX) * 2 / a.dist(b), 9);
+        for (int i = 0; i < NUM_OBJECTS; i++) {
+            float d = random(D_MIN, D_MAX);
+            float x = random(-width / 2 + BORDER + d / 2, width / 2 - BORDER - d / 2);
+            float y = random(-height / 2 + BORDER + d / 2, height / 2 - BORDER - d / 2);
 
-					PVector color = o1.getColor().copy();
+            float m = c + random(0, 60);
 
-					stroke(color.x, a.dist(b), color.z, alpha);
-					line(a.x, a.y, b.x, b.y);
-				}
-			}
-		}
-	}
+            One one = new One(x, y, d, new PVector(m, 255, 128));
 
-	/**
-	 * Update the element in the scene.
-	 */
-	protected void update() {
-		checkOutOfScreen();
+            one.setDirection(direction);
+            objects.add(one);
+        }
+        iterations++;
+    }
 
-		if (iterations > MAX_ITERATIONS) {
-			background(255);
-			iterations = 0;
-			reset();
-		}
+    /**
+     * Draw scene.
+     */
+    @Override
+    public void draw() {
+        update();
+        translate(width / 2, height / 2);
+        for (One o1 : objects) {
+            for (One o2 : objects) {
+                if (o1.intersect(o2)) {
+                    PVector a = o1.getPos();
+                    PVector b = o2.getPos();
 
-		if (objects.size() == 0) {
-			if (folder != null) {
-				save(folder + System.currentTimeMillis() + ".png");
-			}
-			reset();
-		}
+                    float alpha = map(a.dist(b), 0, D_MAX * 2, 0, 100);
 
-		objects.forEach(One::update);
-	}
+                    PVector color = o1.getColor().copy();
 
-	List<One> objects = new ArrayList<>();
-	PVector color;
-	int iterations;
-	String folder = null;
+                    float saturation = map(a.dist(b), 0, D_MAX * 2, 0, 128);
+                    stroke(color.x, saturation, color.z, alpha);
 
-	public void settings() {
-		size(SIZE, SIZE);
-	}
+                    line(a.x, a.y, b.x, b.y);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Set up scene.
-	 */
-	public void setup() {
+    /**
+     * Update the element in the scene.
+     */
+    protected void update() {
+        checkOutOfScreen();
 
-		background(255);
-		colorMode(HSB);
-		strokeWeight(1);
-		selectFolder("Select an output folder!", "folderSelected");
-		iterations = 0;
-		//        reset();
-	}
+        if (iterations > MAX_ITERATIONS) {
+            background(255);
+            iterations = 0;
+            reset();
+        }
 
-	/**
-	 * Callback function for folder selection dialogue.
-	 *
-	 * @param selection Folder selected.
-	 */
-	public void folderSelected(File selection) {
-		if (selection != null) {
-			folder = selection.getAbsolutePath() + File.separator;
-		}
-	}
+        if (objects.size() == 0) {
+            save(savePath + System.currentTimeMillis() + ".png");
+            reset();
+        }
 
-	/**
-	 * Check if any elements are out of screen. If they are, remove them from the scene.
-	 */
-	protected void checkOutOfScreen() {
-		// check for items out of screen
-		List<One> remove = objects.stream().filter(this::isOutOfScreen).collect(Collectors.toList());
+        objects.forEach(One::update);
+    }
 
-		remove.forEach(objects::remove);
-	}
+    /**
+     * Check if any elements are out of screen. If they are, remove them from the scene.
+     */
+    protected void checkOutOfScreen() {
+        // check for items out of screen
+        List<One> remove = objects.stream().filter(this::isOutOfScreen).collect(Collectors.toList());
 
-	/**
-	 * Check if the element is out of screen.
-	 *
-	 * @param one Element that needs to be checked.
-	 * @return boolean
-	 */
-	protected boolean isOutOfScreen(One one) {
-		return Math.abs(one.getPos().x) + BORDER > width / 2 || Math.abs(one.getPos().y) + BORDER > height / 2;
-	}
+        remove.forEach(objects::remove);
+    }
 
-	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "name.euleule.processing.ElementOneVariationSeven" });
-	}
+    /**
+     * Check if the element is out of screen.
+     *
+     * @param one Element that needs to be checked.
+     * @return boolean
+     */
+    protected boolean isOutOfScreen(One one) {
+        return Math.abs(one.getPos().x) + BORDER > width / 2 || Math.abs(one.getPos().y) + BORDER > height / 2;
+    }
+
+    public static void main(String args[]) {
+        PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationSeven"});
+    }
 }

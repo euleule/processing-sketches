@@ -15,12 +15,18 @@ public class LinesOne extends CustomPApplet {
     int pointsX = 2;
     int pointsY = 2;
 
-    public void setup() {
+    @Override
+    public void settings(){
         size(900, 900);
+    }
+
+    @Override
+    public void setup() {
         stroke(getRandomGrey());
         strokeWeight(2);
     }
 
+    @Override
     public void draw() {
         background(255);
 
