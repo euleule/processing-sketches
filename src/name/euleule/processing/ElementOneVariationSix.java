@@ -140,7 +140,7 @@ public class ElementOneVariationSix extends PApplet {
         }
 
         for(List<One> group: groups){
-            PVector bari = group.get(0).getPos().copy();
+            PVector bari = group.get(0).getPos().get();
             bari.add(group.get(1).getPos());
 bari.div(2);
             bari.normalize();

@@ -130,7 +130,7 @@ public class ElementsApplet extends PApplet {
             }
 
             for (List<One> group : groups) {
-                PVector bari = group.get(0).getPos().copy();
+                PVector bari = group.get(0).getPos().get();
                 bari.sub(group.get(1).getPos());
                 bari.normalize();
                 bari.div(10);
@@ -217,9 +217,4 @@ public class ElementsApplet extends PApplet {
             group.add(o2);
             groups.add(group);
         }
-
-        public static void main(String args[]) {
-            PApplet.main(new String[]{"--present", "name.euleule.processing.ElementOneVariationSeven"});
-        }
-
 }

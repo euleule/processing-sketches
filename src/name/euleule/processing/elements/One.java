@@ -21,7 +21,7 @@ public class One {
      */
     public One(float x, float y, float diameter, PVector color) {
         this.pos = new PVector(x, y);
-        this.start = pos.copy();
+        this.start = pos.get();
         this.diameter = diameter;
         this.color = color;
         direction = PVector.random2D();

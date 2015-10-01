@@ -67,7 +67,7 @@ public class ElementOneVariationEight extends ElementsApplet {
 
             float alpha = min(D_MAX * 15 / one.getStart().dist(one.getPos()), 50);
 
-            PVector color = one.getColor().copy();
+            PVector color = one.getColor().get();
 
             stroke(color.x, 255 * one.getSize() / one.getStart().dist(one.getPos()), color.z, alpha);
 //            stroke(color.x, color.y, color.z, alpha);
