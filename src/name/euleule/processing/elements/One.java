@@ -133,4 +133,8 @@ public class One {
     public void setStart(PVector start) {
         this.start = start;
     }
+
+    public void setColor(PVector color) {
+        this.color = color;
+    }
 }
