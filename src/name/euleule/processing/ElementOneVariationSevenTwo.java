@@ -100,7 +100,7 @@ public class ElementOneVariationSevenTwo extends PApplet {
 
         if (flowers.size() == 0) {
             noLoop();
-            save("/Users/robert/Desktop/" + System.currentTimeMillis() + ".jpg");
+            save("/Users/robert/Desktop/Sketches" + System.currentTimeMillis() + ".jpg");
             exit();
         }
 

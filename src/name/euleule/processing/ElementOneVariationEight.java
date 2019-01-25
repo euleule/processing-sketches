@@ -30,7 +30,7 @@ public class ElementOneVariationEight extends PApplet {
     List<List<One>> groups;
     PVector color;
     int iterations;
-    String folder = null;
+    String folder = "/Users/robert/Desktop/Sketches/";
 
     @Override
     public void settings(){

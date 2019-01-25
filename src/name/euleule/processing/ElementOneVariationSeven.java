@@ -37,7 +37,7 @@ public class ElementOneVariationSeven extends PApplet {
     // Number of iterations
     final int MAX_ITERATIONS = 1;
 
-    final int SIZE = 1000;
+    final int SIZE = 1700;
 
     List<One> objects;
     List<List<One>> groups;
@@ -117,13 +117,10 @@ public class ElementOneVariationSeven extends PApplet {
     protected void update() {
         checkOutOfScreen();
 
-        if (iterations > MAX_ITERATIONS) {
-            noLoop();
-//            exit();
-        }
-
         if (objects.size() == 0) {
-            reset();
+            noLoop();
+            save("/Users/robert/Desktop/Sketches/" + System.currentTimeMillis() + ".jpg");
+            exit();
         }
 
         for (One o : objects) {

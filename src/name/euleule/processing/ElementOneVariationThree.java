@@ -26,17 +26,15 @@ import java.util.List;
 public class ElementOneVariationThree extends PApplet {
 
     // Number of elements used for rendering
-    final int NUM_OBJECTS = 80;
+    final int NUM_OBJECTS = 40;
     // Minimum size of elements
-    final int D_MIN = 50;
+    final int D_MIN = 100;
     // Maximum size of elements
-    final int D_MAX = 150;
+    final int D_MAX = 250;
     // Border width in px
-    final int BORDER = 200;
+    final int BORDER = 0;
     // Number of iterations
-    final int MAX_ITERATIONS = 5;
-
-    final int SIZE = 1600;
+    final int MAX_ITERATIONS = 10;
 
     List<One> objects;
     List<List<One>> groups;
@@ -45,20 +43,21 @@ public class ElementOneVariationThree extends PApplet {
 
     @Override
     public void settings(){
-        size(SIZE, SIZE);
+        size(1750, 1200);
     }
+//    public void settings(){
+//        size(3508, 2480);
+//    }
 
     /**
      * Set up scene.
      */
     @Override
     public void setup() {
-
-        background(255, 250, 240);
-
-        image(loadImage("/Users/robert/Desktop/back.png"), 0, 0);
-
+        background(255);
         color = PVector.random3D();
+        color = color.normalize();
+        color = color.mult(64);
 
         strokeWeight(1);
         reset();
@@ -84,6 +83,8 @@ public class ElementOneVariationThree extends PApplet {
             one.setDirection(dir);
             objects.add(one);
         }
+
+        checkIntersections();
 
         iterations++;
     }
@@ -118,11 +119,12 @@ public class ElementOneVariationThree extends PApplet {
         for (One o : objects) {
             o.update();
         }
-        checkIntersections();
 
         checkOutOfScreen();
 
         if (iterations > MAX_ITERATIONS) {
+            noLoop();
+            save("/Users/robert/Desktop/Sketches/" + System.currentTimeMillis() + ".jpg");
             exit();
         }
 
@@ -130,7 +132,6 @@ public class ElementOneVariationThree extends PApplet {
             objects.clear();
             reset();
         }
-
     }
 
     /**
