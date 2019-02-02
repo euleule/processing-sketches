@@ -1,19 +1,23 @@
 package name.euleule.processing;
 
-import name.euleule.processing.elements.One;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 public class FunWithAgents extends PApplet {
 
     int MAX_ITERATIONS = 10000;
     int iterations = 0;
-    int WIDTH = 3508;
-    int HEIGHT = 2480;
+    // A4
+//    int WIDTH = 3508;
+//    int HEIGHT = 2480;
 
+    // A0
+    int WIDTH =  11858;
+    int HEIGHT = 16735;
+
+    // Test
 //    int WIDTH = 1000;
 //    int HEIGHT = 1000;
 
@@ -21,8 +25,10 @@ public class FunWithAgents extends PApplet {
     Agent a;
     Agent[] agents;
 
-    float noiseScale;
-    float noiseStrength;
+//    float noiseScale = 255f / max(WIDTH, HEIGHT);
+    float noiseScale = 900f;
+    float noiseStrength = 5.f;
+
 
     class Agent {
         PVector p, pOld;
@@ -36,7 +42,7 @@ public class FunWithAgents extends PApplet {
         }
 
         void update() {
-            angle = noise(p.x/noiseScale, p.y/noiseScale)*noiseStrength;
+            angle = noise(p.x / noiseScale, p.y / noiseScale) * noiseStrength;
             p.x += cos(angle) * stepSize;
             p.y += sin(angle) * stepSize;
 
@@ -49,7 +55,8 @@ public class FunWithAgents extends PApplet {
                 isOutside = false;
             }
 
-            line(pOld.x, pOld.y, p.x, p.y);
+//            line(pOld.x, pOld.y, p.x, p.y);
+            point(p.x, p.y);
             pOld.set(p);
         }
     }
@@ -66,8 +73,10 @@ public class FunWithAgents extends PApplet {
     public void setup() {
         background(255);
         strokeWeight(1);
+        stroke(30,128.f);
+        noiseSeed(1466888400L);
         a = new Agent();
-        int n = 10000;
+        int n = 100000;
         agents = new Agent[n];
         for (int i = 0; i < n; i++) {
             agents[i] = new Agent();
@@ -79,15 +88,13 @@ public class FunWithAgents extends PApplet {
      */
     @Override
     public void draw() {
-        noiseScale = 90.f;
-        noiseStrength = 30.f;
         for (Agent a : agents) {
             a.update();
         }
 
         if (iterations > MAX_ITERATIONS) {
             noLoop();
-            save("/Users/robert/Desktop/Sketches/" + System.currentTimeMillis() + ".jpg");
+            save("/Users/robert/Desktop/Sketches/" + System.currentTimeMillis() + ".tif");
             exit();
         }
 
@@ -98,9 +105,9 @@ public class FunWithAgents extends PApplet {
     public void keyPressed() {
         if (key == 's') {
             System.out.println("Saving ...");
-            System.out.println("Scale "+noiseScale);
-            System.out.println("Strength "+noiseStrength);
-            save("/Users/robert/Desktop/Sketches/" + System.currentTimeMillis() + ".jpg");
+            System.out.println("Scale " + noiseScale);
+            System.out.println("Strength " + noiseStrength);
+            save("/Users/robert/Desktop/Sketches/" + System.currentTimeMillis() + ".tif");
         } else if (key == 'r') {
             background(255);
             redraw();
