@@ -2,6 +2,7 @@ package name.euleule.processing;
 
 import name.euleule.processing.elements.One;
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -24,26 +25,33 @@ import java.util.List;
  */
 public class ElementOneVariationSix extends PApplet {
 
+    // A4
+//    int WIDTH = 3508;
+//    int HEIGHT = 2480;
+
+    // A0
+    int WIDTH = 11858;
+    int HEIGHT = 16735;
+
     // Number of elements used for rendering
-    final int NUM_OBJECTS = 700;
+    final int NUM_OBJECTS = 1700;
     // Minimum size of elements
-    final int D_MIN = 15;
+    final int D_MIN = 400;
     // Maximum size of elements
-    final int D_MAX = 30;
-    // Border width in px
-    final int BORDER = 30;
+    final int D_MAX = 800;
     // Number of iterations
     final int MAX_ITERATIONS = 1;
-    final int SIZE = 600;
 
     List<One> objects;
     List<List<One>> groups;
     PVector color;
     int iterations;
 
+    PGraphics p;
+
     @Override
     public void settings() {
-        size(SIZE, SIZE);
+        size(600,800);
     }
 
     /**
@@ -51,9 +59,11 @@ public class ElementOneVariationSix extends PApplet {
      */
     @Override
     public void setup() {
-        background(255);
-        colorMode(HSB);
-        strokeWeight(1);
+        p = createGraphics(WIDTH, HEIGHT);
+        p.beginDraw();
+        p.background(255);
+        p.colorMode(p.HSB);
+        p.strokeWeight(1);
         iterations = 0;
         reset();
     }
@@ -70,8 +80,8 @@ public class ElementOneVariationSix extends PApplet {
 
         for (int i = 0; i < NUM_OBJECTS; i++) {
             float d = random(D_MIN, D_MAX);
-            float x = random(-width / 2 + BORDER + d / 2, width / 2 - BORDER - d / 2);
-            float y = random(-height / 2 + BORDER + d / 2, height / 2 - BORDER - d / 2);
+            float x = random(-WIDTH / 2 + d / 2, WIDTH / 2 - d / 2);
+            float y = random(-HEIGHT / 2 + d / 2, HEIGHT / 2 - d / 2);
 
             float m = c;
             float k = random(0, 3);
@@ -93,7 +103,8 @@ public class ElementOneVariationSix extends PApplet {
     @Override
     public void draw() {
         update();
-        translate(width / 2, height / 2);
+        p.beginDraw();
+        p.translate(WIDTH / 2, HEIGHT / 2);
         for (List<One> group : groups) {
             One o1 = group.get(0);
             One o2 = group.get(1);
@@ -104,10 +115,11 @@ public class ElementOneVariationSix extends PApplet {
 
             PVector color = o1.getColor().copy();
 
-            stroke(color.x, a.dist(b), color.z, alpha);
-            stroke(color.x, color.y, color.z, alpha);
-            line(a.x, a.y, b.x, b.y);
+            p.stroke(color.x, a.dist(b), color.z, alpha);
+//            p.stroke(color.x, color.y, color.z, alpha);
+            p.line(a.x, a.y, b.x, b.y);
         }
+        p.endDraw();
     }
 
     /**
@@ -117,6 +129,9 @@ public class ElementOneVariationSix extends PApplet {
         checkOutOfScreen();
 
         if (iterations > MAX_ITERATIONS) {
+            noLoop();
+            p.endDraw();
+            p.save("/Users/robert/Desktop/Sketches/" + System.currentTimeMillis() + ".tif");
             exit();
         }
 
@@ -137,6 +152,7 @@ public class ElementOneVariationSix extends PApplet {
             group.get(0).getPos().add(bari);
         }
 
+        image(p,0,0,600,800);
         checkIntersections();
     }
 
@@ -173,7 +189,7 @@ public class ElementOneVariationSix extends PApplet {
      * @return boolean
      */
     private boolean isOutOfScreen(One one) {
-        return Math.abs(one.getPos().x) + BORDER > width / 2 || Math.abs(one.getPos().y) + BORDER > height / 2;
+        return Math.abs(one.getPos().x) > WIDTH / 2 || Math.abs(one.getPos().y) > HEIGHT / 2;
     }
 
     /**
